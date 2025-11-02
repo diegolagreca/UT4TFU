@@ -49,7 +49,7 @@ services:
     build: ./services/payments-adapter
     environment:
       FAILURE_RATE: "0.3"
-      QUEUE_URL: amqp://guest:guest@queue:5672/
+      QUEUE_URL: amqp://queue
     healthcheck:
       test: ["CMD", "wget", "-qO-", "http://localhost:3002/health"]
       interval: 10s

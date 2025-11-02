@@ -23,7 +23,7 @@ app.post('/charge', (req,res)=>{
 // Consumer (competing) for 'payments' queue (background)
 (async ()=>{
   try {
-    const conn = await amqp.connect(process.env.QUEUE_URL || 'amqp://queue:5672/');
+    const conn = await amqp.connect(process.env.QUEUE_URL || 'amqp://queue');
     const ch = await conn.createChannel();
     await ch.assertQueue('payments', { durable: false });
     await ch.consume('payments', msg => {
