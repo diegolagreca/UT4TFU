@@ -8,10 +8,8 @@ services:
       KONG_LOG_LEVEL: debug
     volumes:
       - ./deploy/gateway/kong.yml:/kong.yml:ro
-    depends_on:
-      - orders-write
-      - orders-read
-      - auth
+    depends_on: [orders-write, orders-read, auth]
+
   auth:
     image: quay.io/keycloak/keycloak:25.0
     command: ["start-dev", "--http-port=8081"]
@@ -21,13 +19,17 @@ services:
     build: ./services/orders-write
     environment:
       CONFIG_URL: http://config:8088/config
+      # ⇩⇩ RABBITMQ URL COMPLETA (user/pass/puerto/vhost)
+      AMQP_URL:  amqp://guest:guest@queue:5672/
       QUEUE_URL: amqp://guest:guest@queue:5672/
+      PAYMENTS_QUEUE: payments
       WRITE_DB_URL: postgres://postgres:dev@writedb:5432/postgres
-      READ_DB_URL: postgres://postgres:dev@readdb:5432/postgres
+      READ_DB_URL:  postgres://postgres:dev@readdb:5432/postgres
       PAYMENTS_URL: http://payments-adapter:3002
       CB_ERROR_THRESHOLD: "5"
       CB_TIMEOUT_MS: "3000"
     healthcheck:
+      # usa curl (alpine busybox suele traerlo; si no, ver alternativa CMD-SHELL con node)
       test: ["CMD", "wget", "-qO-", "http://localhost:3000/health"]
       interval: 10s
       retries: 5
@@ -49,17 +51,24 @@ services:
     build: ./services/payments-adapter
     environment:
       FAILURE_RATE: "0.3"
-      QUEUE_URL: amqp://queue
+      AMQP_URL:  amqp://guest:guest@queue:5672/
+      QUEUE_URL: amqp://guest:guest@queue:5672/
+      PAYMENTS_QUEUE: payments
     healthcheck:
+      # <<< importante: que el healthcheck exista y funcione
       test: ["CMD", "wget", "-qO-", "http://localhost:3002/health"]
       interval: 10s
       retries: 5
     depends_on: [queue]
+    # (opcional, solo si querés probar desde el host con curl/browser)
+    # ports: ["3002:3002"]
 
   projector:
     build: ./services/projector
     environment:
+      AMQP_URL:  amqp://guest:guest@queue:5672/
       QUEUE_URL: amqp://guest:guest@queue:5672/
+      PAYMENTS_QUEUE: payments
       READ_DB_URL: postgres://postgres:dev@readdb:5432/postgres
     depends_on: [queue, readdb]
 
@@ -69,7 +78,6 @@ services:
     environment:
       RABBITMQ_DEFAULT_USER: guest
       RABBITMQ_DEFAULT_PASS: guest
-
 
   redis:
     image: redis:7
@@ -83,6 +91,7 @@ services:
     environment:
       POSTGRES_PASSWORD: dev
     ports: ["5433:5432"]
+
   readdb:
     image: postgres:16
     environment:
