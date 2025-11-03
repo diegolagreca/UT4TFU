@@ -106,13 +106,13 @@ demo-config:
 
 .PHONY: cb-open
 cb-open:
-	@echo "Forzando fallos en el proveedor (rate=1.0)..."
+	@echo "Force integration failures (rate=1.0)..."
 	@docker-compose exec orders-write sh -lc \
 		'wget -qO- --post-data="{}" "http://payments-adapter:3002/toggle?rate=1.0"' | sed 's/^/  /'
 
 .PHONY: cb-close
 cb-close:
-	@echo "Restaurando proveedor (rate=0.0)..."
+	@echo "Restore integration (rate=0.0)..."
 	@docker-compose exec orders-write sh -lc \
 		'wget -qO- --post-data="{}" "http://payments-adapter:3002/toggle?rate=0.0"' | sed 's/^/  /'
 

@@ -79,4 +79,4 @@ else
 fi
 
 bar
-echo "TIP: Abrí RabbitMQ UI http://localhost:15672 y mirá la cola 'payments' (Ready/Unacked)."
+echo "RabbitMQ UI http://localhost:15672 look for 'payments' (Ready/Unacked)."

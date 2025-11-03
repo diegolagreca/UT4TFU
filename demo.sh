@@ -20,7 +20,7 @@ step_health() {
   tests/availability/health_smoke.sh
   pause
 
-  say "⬆️ Open breaker (simulate failures at provider: rate=1.0)"
+  say "Open breaker (simulate failures at provider: rate=1.0)"
   make cb-open
   echo
   say "Trigger several payments — expect fast 503 once breaker is OPEN"
@@ -33,12 +33,12 @@ step_health() {
   echo
   pause
 
-  say "⬇️ Close breaker (rate=0.0) — half-open probes should succeed"
+  say "Close breaker (rate=0.0) — half-open probes should succeed"
   make cb-close
   bar
 
   pause
-  say "🔁 Verificando recuperación (esperamos volver a HTTP 200)"
+  say "Verificando recuperación (esperamos volver a HTTP 200)"
   sleep 3
   for i in $(seq 1 3); do
     code=$(curl -s -o /dev/null -w "%{http_code} " \
@@ -99,4 +99,4 @@ case "$PART" in
   *) echo "Unknown PART=$PART (use availability|performance|security|config|all)"; exit 1;;
 esac
 
-say "✅ Demo complete."
+say "Demo complete."
