@@ -28,7 +28,5 @@ docker compose up -d --build
 - `services/` Node.js microservicios (Express).
 - `infra/config-store/` Config externa simple (JSON), consumida por servicios.
 - `deploy/gateway/kong.yml` Kong declarativo con OIDC simulado + rate limiting.
-- `docs/` Parte 1 (UML + explicación + medición).
+- `docs/` PDF con la entrega
 - `tests/` scripts de carga, disponibilidad y seguridad.
-
-> Nota: El OIDC está **simulado** en el plugin para simplificar el demo local. En una entrega real, apunta a Keycloak/IdP.
